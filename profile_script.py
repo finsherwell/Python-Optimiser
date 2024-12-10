@@ -41,6 +41,35 @@ def get_user_defined_functions(target_script):
         tree = ast.parse(file.read())
         return [node.name for node in ast.walk(tree) if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))]
 
+def update_profile_values(profile_data, keys_to_find):
+    """
+    Iterate through the profile data and assign values to the keys_to_find dictionary
+    based on the matching function names in the profile data.
+    
+    :param profile_data: The profiling data, a dictionary of function profiles.
+    :param keys_to_find: A dictionary where the keys are function names we want to find,
+                          and values are initially empty (e.g., None or any placeholder).
+    :return: The updated dictionary with values filled for matched keys.
+    """
+    
+    # Iterate through the profile data and keys_to_find
+    for func_name, profile in profile_data:
+        if func_name in keys_to_find:
+            # Assign the profile data to the dictionary key
+            keys_to_find[func_name] = {
+                "ncalls": profile.ncalls,
+                "tottime": profile.tottime,
+                "cumtime": profile.cumtime,
+                "percall_tottime": profile.percall_tottime,
+                "percall_cumtime": profile.percall_cumtime
+            }
+        
+        # If all keys are found, break out of the loop
+        if all(value is not None for value in keys_to_find.values()):
+            break
+
+    return keys_to_find
+
 def profile_script(target_script, cache_file="profiling_cache.json"):
     # Ensure target script exists
     if not Path(target_script).is_file():
@@ -73,6 +102,8 @@ def profile_script(target_script, cache_file="profiling_cache.json"):
     stats = pstats.Stats(profiler, stream=stream)
     stats.strip_dirs().sort_stats('cumulative')
     # Example of filtering out irrelevant function profiles
+
+    print(update_profile_values(stats.get_stats_profile, funcs_to_show))
 
     """
     new_cache = {}  # To store the new cache data
