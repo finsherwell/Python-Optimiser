@@ -1,16 +1,20 @@
-import tkinter
-from tkinter import ttk
-import os
-
+# app.py
+import tkinter as tk
+from tkinter import ttk, filedialog
 import sv_ttk
+from profile_script import profile_script
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-root = tkinter.Tk()
+# Create the main window
+root = tk.Tk()
+root.title("Python Script Profiler")
+root.geometry("900x650")  # Resize for more space
 
-theme_path = os.path.join(os.getcwd(), 'forest-dark.tcl')  # Ensure this is the correct path
-root.tk.call('source', theme_path)
-ttk.Style().theme_use('forest-dark')
+# Apply the Forest theme
+sv_ttk.set_theme("dark")
 
-button = ttk.Button(root, text="I'm a themed button")
-button.pack(pady=20)
+# Use a consistent font
+font_style = ("Arial", 12)
 
 root.mainloop()
